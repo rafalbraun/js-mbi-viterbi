@@ -1,0 +1,187 @@
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Algorytm Viterbiego</title>
+    <link href="Content/bootstrap-theme.css" rel="stylesheet" />
+    <link href="Content/bootstrap.css" rel="stylesheet" />
+    <link href="Content/handsontable.full.css" rel="stylesheet" />
+
+    <script src="Scripts/jquery-1.9.1.js"></script>
+    <script src="Scripts/bootstrap.js"></script>
+    <script src="Scripts/handsontable.full.js"></script>
+    
+    
+</head>
+<style>
+.pull-right {
+    float: right;
+}
+
+table, th, td {
+   border: 1px solid black;
+}
+</style>
+<body>
+    <form>
+
+        <nav class="navbar navbar-inverse">
+          <div class="container-fluid">
+            <div class="navbar-header">
+              <a class="navbar-brand" href="#" onclick="return show('Info');">Algorytm Viterbiego</a>
+            </div>
+            <ul class="nav navbar-nav">
+              <li><a href="#" onclick="return show('Info');">Opis algorytmu</a></li>
+              <li><a href="#" onclick="return show('Algo');">Algorytm</a></li>
+              <!--
+              <li><a href="#" onclick="return show('Run');">Uruchom</a></li>
+              -->
+            </ul>
+          </div>
+        </nav>
+
+        <div class="container-fluid">
+            
+            <div id="Info">
+                <div class="jumbotron">
+                    <h2>Wyszukiwanie wysp CPG w łańcuchu DNA metodą Viterbiego</h2> 
+                    <br><br><br> <!-- few newlines -->
+                    <p>
+                        <b>Algorytm Viterbiego</b> 
+                        - stosowany w kontekście ukrytych modeli Markowa (ang. HMM) do dekodowania sekwencji stanów ukrytych, które z największym prawdopodobieństwem mogły dać sekwencję obserwacji.
+                        Działanie tego algorytmu oparte jest o kryterium najwyższej wiarygodności, a jego ideą jest to, że optymalna ścieżka dojścia przez dekoder do aktualnego stanu składa się ze ścieżki o najmniejszej metryce dojścia do któregoś ze stanów poprzednich oraz przejścia do aktualnego stanu.
+                    </p>
+                    
+                    <br><br> <!-- few newlines -->
+                    
+                    <div class='pull-right'>
+                    <p>
+                        <a class="btn btn-lg btn-primary" href="./test/index.html">Testy &raquo;</a>
+                        <a class="btn btn-lg btn-primary" href="#" onclick="return show('Algo');">Demonstracja &raquo;</a>
+                    </p>
+                    </div>
+                    
+                    <br><br><br> <!-- few newlines -->
+
+                </div class="jumbotron">
+            </div>
+            
+            
+            <div id="Algo" style="display:none">
+                <div class="jumbotron">
+                    
+                    
+                    <h3>Macierz emisji:</h3>
+                    <input type="file" id="file-input-emission" />
+                    <!--
+                    <pre id="file-content-emission"></pre>
+                    -->
+
+                    
+                    <div id="emissionMatrix"></div>
+                    
+                    <br>
+                    
+                    
+                    <h3>Macierz przejść:</h3>
+                    <input type="file" id="file-input-translation" />
+                    <!--
+                    <pre id="file-content-translation"></pre>
+                    -->
+                    
+                    <div id="translationMatrix"></div>
+                    
+                    <br>
+                    
+                    Sekwencja: <input type="text" id="sequence" size="40" maxlength="40">
+                    
+                    <a class="btn btn-md btn-primary" href="#" onclick="return resetState();">Reset</a>
+                    <a class="btn btn-md btn-primary" href="#" onclick="return setExample();">Przykładowe dane</a>
+                    <a class="btn btn-md btn-primary" href="#" onclick="return runAlg(1);">Praca krokowa</a>
+                    <a class="btn btn-md btn-primary" href="#" onclick="return runAlg();">Wynik</a>
+
+                    
+                    
+                </div> <!-- class="jumotron" -->
+            </div> <!-- id="Algo" -->
+            
+            
+            <div id="Run" style="display:none">
+                <h3>Macierz wynikowa:</h3>
+                
+                    <div id="resultMatrix"></div>
+
+                    <nav class="navbar navbar-fixed-bottom navbar-default" id="bottomNavbar">
+                        <div class="container-fluid">
+                            <div id="navbar" class="navbar-collapse collapse">
+                                <ul class="nav navbar-nav">
+                                    
+                                    <a id="nextStep" class="btn btn-primary" href="#" onclick="return nextStep()">Następny krok</a>
+                                    <a id="prevStep" class="btn btn-primary" href="#" onclick="return previousStep()">Poprzedni krok</a>
+                                    <a id="read" class="btn btn-primary" href="#" onclick="return readSequence()">Odczytaj sekwencję</a>
+                                    <a id="toEnd" class="btn btn-primary"href="#" onclick="return toEnd()">Do końca</a>
+                                    
+                                    <!--
+                                    <li class="disabled" id="prevStep"><a href="#">Poprzedni krok</a></li>
+                                    <li id="nextStep"><a href="#" onclick="return processScreenNextStep();">Następny krok</a></li>
+                                    <li id="nextStep"><a href="#" onclick="return processScreenResult();">Wynik</a></li>
+                                    -->
+                                </ul>
+                            </div>
+                        </div>
+                    </nav>
+                    
+                    <div id="calculations">
+                        <textarea id="calculationsTextArea" rows="8" cols="50"></textarea>
+                    </div>
+                    
+                    <div id="outputSequenceDiv">
+                    Najbardziej prawdopodobna sekwencja stanów: <input type="text" id="outputSequenceInput" size="40"value="" readonly>
+                    </div>
+            </div>
+            
+            
+            
+            
+            <!--
+            <div id="Run">
+                <div class="jumbotron">
+                    <h3>Macierz wynikowa:</h3>
+                    <div id="resultMatrix"></div>
+                    <pre id="expl"></pre>
+                    
+                    <nav class="navbar navbar-fixed-bottom navbar-default" id="bottomNavbar">
+                        <div class="container-fluid">
+                            <div id="navbar" class="navbar-collapse collapse">
+                                <ul class="nav navbar-nav">
+                                    <li class="disabled" id="previousStep"><a href="#">Poprzedni krok</a></li>
+                                    <li id="nextStep"><a href="#" onclick="return processScreenNextStep();">Następny krok</a></li>
+                                    <li id="nextStep"><a href="#" onclick="return processScreenResult();">Wynik</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </nav>
+                    
+                </div>
+            </div>
+            -->
+            <!--
+            <div id="Read">
+                
+                
+                
+            </div> --> <!-- /id=Read -->
+            
+        </div> <!--/.container-fluid -->
+        
+        
+        
+        
+        
+        
+    </form>
+    
+    <script src="js/Viterbi.js"></script>
+    <script src="js/Utils.js"></script>
+
+</body>
+</html>
