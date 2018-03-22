@@ -8,4 +8,4 @@ Program pozwala na zbadanie przebiegu dekodowania prezentując cały proces krok
 
 ## Uruchomienie
 
-Aby uruchomić aplikację należy pobrać plik, a następnie otworzyć plik index.html w przeglądarce
+Aby uruchomić aplikację należy pobrać archiwum projektu, a następnie otworzyć plik index.html w przeglądarce
